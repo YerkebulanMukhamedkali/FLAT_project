@@ -9,11 +9,7 @@ class MyTree:
         self.statement = STATEMENT
         self.pref = PREF
 
-
-f = open(sys.argv[-1])
-out = open('out.py', 'w')
-tobewritten = ""
-types = []
+result = ""
 
 tree = MyTree(None, "root", "root", "")
 
@@ -47,7 +43,7 @@ def define_type(line):
     return 'default'
 
 def parse(TREE, pref):
-    global tobewritten, MYFILE
+    global MYFILE
 
     for line in MYFILE:
         statement = define_statement(line)
@@ -71,35 +67,42 @@ def goFile(file):
         line.replace('\n', '')
         if 'class' not in line and 'void ' not in line:
             MYFILE.append(line)
-    
-
-goFile(f)
-parse(tree, "")
-
-
+  
 def make(TREE):
-    global out
+    global result
 
     if (TREE.Type != 'end'):
-        out.write(TREE.pref)
+        result += TREE.pref
 
     if (TREE.Type != 'root'):
         if (TREE.Type == 'if'):
-            out.write('if ' + TREE.statement + ':')
+            result += 'if ' + TREE.statement + ':'
         if (TREE.Type == 'else'):
-            out.write('else:')
+            result += 'else:'
         if (TREE.Type == 'while'):
-            out.write('while ' + TREE.statement + ':')
+            result += 'while ' + TREE.statement + ':'
         if (TREE.Type == 'default'):
-            out.write(TREE.statement)
+            result += TREE.statement
         if (TREE.Type == 'print'):
-            out.write('print(' + TREE.statement + ')')
+            result += 'print(' + TREE.statement + ')'
         
         if (TREE.Type != 'end'):
-            out.write('\n')
+            result += '\n'
     
     for i in TREE.childs:
         make(i)
 
-curTree = tree
-make(curTree)
+# curTree = tree
+# make(curTree)
+
+def do_it(filename):
+    global result, tree, MYFILE
+
+    result = ""
+    f = open(filename, 'r')
+    goFile(f)
+    f.close()
+    parse(tree, "")
+    curTree = tree
+    make(curTree)
+    return result
